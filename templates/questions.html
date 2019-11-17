@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Questions list</h1>
+    {% for item in questions %}
+        <p>
+            {{ item.text }}
+        <form action="/answer/{{ item.id }}" method="post" name="answer">
+            {{form.hidden_tag()}}
+            {{form.answer}}
+            <input type="submit" value="Answer">
+        </form>
+        </p>
+    {% endfor %}
+
+    <h1>Add question</h1>
+    <form action="" method="post">
+        {{ adding_form.hidden_tag() }}
+        {{ adding_form.text }}
+        <p>{{ adding_form.submit() }}</p>
+    </form>
+
+{% endblock %}

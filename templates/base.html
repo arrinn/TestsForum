@@ -1,0 +1,22 @@
+<html>
+  <head>
+    {% if title %}
+        <title>{{title}} - Tests</title>
+    {% else %}
+        <title>Tests</title>
+    {% endif %}
+  </head>
+  <body>
+    <div>Tests: <a href="/index">Home</a></div>
+    <div>Tests: <a href="/login">login</a></div>
+    <div>Tests: <a href="/logout">logout</a></div>
+    <div>Tests: <a href="/register">register</a></div>
+    <div>Tests: <a href="/questions">questions</a></div>
+    <hr>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+  </body>
+</html>
