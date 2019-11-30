@@ -1,18 +1,18 @@
 from flask import flash, redirect, request
 from flask import render_template, url_for
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from init import app
 from forms import LoginForm, AnswerForm, RegistrationForm, QuestionsAddingForm
 
-from database_connector import get_questions_list, write_answer, register_user, get_user, add_question
+from database_connector import get_questions_list, write_answer, register_user, get_user, add_question, \
+    get_answers_list, delete_question, get_question
 
 
-@app.route('/')
 @app.route('/index')
 def hello_world():
-    user = {'nickname': current_user.username}
+    user = {'username': current_user.username if current_user.is_authenticated else 'None'}
     return render_template("index.html", title='Home', user=user)
 
 
@@ -59,21 +59,51 @@ def logout():
 
 
 @app.route('/questions', methods=['GET', 'POST'])
+@login_required
 def questions():
-    adding_form = QuestionsAddingForm()
-
-    if request.method == "POST":
-        add_question(current_user.username, adding_form.text.data)
-
-    form = AnswerForm()
-    return render_template('questions.html', questions=get_questions_list(), form=form, adding_form=adding_form)
+    author = request.args.get('author', None)
+    return render_template('questions.html', questions=get_questions_list(author), form=AnswerForm(),
+                           current_user=current_user.username)
 
 
 @app.route('/answer/<question_id>', methods=['POST'])
+@login_required
 def answer_question(question_id):
-    answer_text = request.form['answer']
-    write_answer(current_user.username, question_id, answer_text)
+    answer_form = AnswerForm()
+    if answer_form.validate_on_submit():
+        write_answer(current_user.username, question_id, answer_form.answer_text.data)
     return redirect(url_for('questions'))
+
+
+@app.route('/profile', methods=['GET'])
+@login_required
+def profile():
+    return render_template('profile.html', username=current_user.username)
+
+
+@app.route('/answers', methods=['GET'])
+@login_required
+def answers_list():
+    return render_template('answers.html', answers=get_answers_list(questions_owner=current_user.username))
+
+
+@app.route('/add_question', methods=['GET', 'POST'])
+@login_required
+def add_question_view():
+    form = QuestionsAddingForm()
+    if request.method == 'POST' and form.validate_on_submit():
+        add_question(current_user.username, form.question.data, form.answer.data)
+        return redirect('/questions')
+    else:
+        return render_template('add_question.html', form=form)
+
+
+@app.route('/delete/<question_id>', methods=['POST'])
+@login_required
+def delete_question_view(question_id):
+    if get_question(question_id).creator == current_user.username:
+        delete_question(question_id)
+    return redirect('/questions')
 
 
 if __name__ == '__main__':
