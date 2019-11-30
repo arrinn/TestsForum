@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
-{% block content %}
-    <h1>Sign In</h1>
+{% block app_content %}
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <p>
@@ -14,5 +13,9 @@
         </p>
         <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
         <p>{{ form.submit() }}</p>
+    </form>
+
+    <form action="/register">
+        <button type="input" class="ant-btn ant-btn-primary" style="margin: 10px;"><span>Sign up</span></button>
     </form>
 {% endblock %}

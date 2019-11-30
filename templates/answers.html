@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+
+<div class="main__items">
+  <div class="quiz">
+    {% for item in answers %}
+        {% include '_single_answer.html' %}
+    {%  endfor %}
+  </div>
+</div>
+
+{% endblock %}

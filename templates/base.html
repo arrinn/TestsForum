@@ -1,22 +1,46 @@
-<html>
+{% extends 'bootstrap/base.html' %}
+
+{% block content %}
   <head>
     {% if title %}
         <title>{{title}} - Tests</title>
     {% else %}
         <title>Tests</title>
     {% endif %}
+    <link rel="stylesheet" type="text/css" href="../static/style.css">
   </head>
+
   <body>
-    <div>Tests: <a href="/index">Home</a></div>
-    <div>Tests: <a href="/login">login</a></div>
-    <div>Tests: <a href="/logout">logout</a></div>
-    <div>Tests: <a href="/register">register</a></div>
-    <div>Tests: <a href="/questions">questions</a></div>
-    <hr>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
+    <div id="root">
+        <div class="main">
+          <div><span class="ant-divider" style="margin: 0px 1em;"></span>
+            <ul class="ant-menu ant-menu-light ant-menu-root ant-menu-inline" role="menu"
+              style="width: 256px; position: sticky; top: 0px;">
+              <li class="ant-menu-item" role="menuitem" style="padding-left: 24px;">
+                  <i aria-label="icon: mail" class="anticon anticon-mail">
+                  </i>Home<a href="/index"></a></li>
+
+              <li class="ant-menu-item" role="menuitem" style="padding-left: 24px;">
+                  <i aria-label="icon: calendar" class="anticon anticon-calendar">
+                  </i>Profile<a href="/profile"></a></li>
+
+              <li class="ant-menu-item" role="menuitem" style="padding-left: 24px;">
+                  <i aria-label="icon: calendar" class="anticon anticon-calendar">
+                  </i>Questions<a href="/questions"></a></li>
+
+              <li class="ant-menu-item" role="menuitem" style="padding-left: 24px;">
+                  <i aria-label="icon: calendar" class="anticon anticon-calendar">
+                  </i>Answers<a href="/answers"></a></li>
+
+              <li class="ant-menu-item" role="menuitem" style="padding-left: 24px;">
+                  <i aria-label="icon: calendar" class="anticon anticon-calendar">
+                  </i>Log out<a href="/logout"></a></li>
+
+            </ul>
+          </div>
+            {% block app_content %}{% endblock %}
+        </div>
+    </div>
   </body>
-</html>
+
+{% endblock %}
