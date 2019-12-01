@@ -37,3 +37,9 @@ class AnswerForm(FlaskForm):
 class QuestionsAddingForm(FlaskForm):
     question = TextAreaField('Question')
     answer = TextAreaField('Answer')
+    is_one_attempt = BooleanField('IsOneAttempt')
+
+
+class FilterForm(FlaskForm):
+    creator = TextAreaField('Name')
+    text = TextAreaField('Text')

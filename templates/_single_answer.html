@@ -1,6 +1,6 @@
 <div class="card" style="background: rgb(236, 236, 236); padding: 30px; margin: 10px 20px;">
   <div class="card__menu"><span class="ant-badge ant-badge-status ant-badge-not-a-wrapper"><span
-        class="ant-badge-status-dot ant-badge-status-success"></span><span
+        class="ant-badge-status-dot {% if item.Answers.is_correct %} ant-badge-status-success {% else %} ant-badge-status-error {% endif %}"></span><span
         class="ant-badge-status-text"></span></span>
     <div class="ant-btn-group">
         <button type="button" class="ant-btn ant-btn-primary ant-btn-sm ant-btn-icon-only"><i aria-label="icon: close"
@@ -20,7 +20,10 @@
           </div>
           <div class="ant-card-body">
             <div class="ant-collapse ant-collapse-icon-position-left" style="margin-bottom: 10px;">
-              <div class="ant-collapse-item ant-collapse-item-active">
+                <div class="ant-collapse-item ant-collapse-item-active">
+                    <div class="ant-collapse-header" role="button" tabindex="0" aria-expanded="true">
+                      <i aria-label="icon: right" class="anticon anticon-right ant-collapse-arrow"></i>User answer
+                    </div>
                 <div class="ant-collapse-content ant-collapse-content-active">
                   <div class="ant-collapse-content-box">
                     <p>
@@ -30,7 +33,21 @@
                 </div>
               </div>
             </div>
-              <span class="ant-typography">Answered by {{ item.Answers.username }}. {{ item.Answers.time }} </span>
+              <div class="ant-collapse ant-collapse-icon-position-left" style="margin-bottom: 10px;">
+                <div class="ant-collapse-item ant-collapse-item-active">
+                    <div class="ant-collapse-header" role="button" tabindex="0" aria-expanded="true">
+                      <i aria-label="icon: right" class="anticon anticon-right ant-collapse-arrow"></i>Correct answer
+                    </div>
+                <div class="ant-collapse-content ant-collapse-content-active">
+                  <div class="ant-collapse-content-box">
+                    <p>
+                      {{ item.correct_answer }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+              <span class="ant-typography">Answered {{ item.Answers.time }} by {{ item.Answers.username }}  </span>
           </div>
       </div>
     </div>

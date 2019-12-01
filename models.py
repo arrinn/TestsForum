@@ -28,7 +28,9 @@ class Questions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     creator = db.Column(db.String(64), db.ForeignKey('users.username'))
     text = db.Column(db.String(120))
+    correct_answer = db.Column(db.String(120))
     time = db.Column(db.String(32))
+    one_attempt = db.Column(db.Boolean)
 
     def __repr__(self):
         return '<id: {}, text: {}>'.format(self.id, self.text)
@@ -40,6 +42,7 @@ class Answers(db.Model):
     username = db.Column(db.String(64), db.ForeignKey('users.username'))
     answer = db.Column(db.String(120))
     time = db.Column(db.String(32))
+    is_correct = db.Column(db.Boolean)
 
     def __repr__(self):
         return '<id: {}, question_id: {}, user_id: {}, text: {}>'.format(

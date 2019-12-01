@@ -4,6 +4,18 @@
 
 <div class="main__items">
   <div class="quiz">
+    <div class="quiz__settings">
+        <form action="/answers" method="POST" class="quiz__settings">
+            {{ filter_form.hidden_tag() }}
+
+            {{ filter_form.creator(class="ant-input", style="margin: 0px 0px 10px;", rows="1",
+                placeholder="filter by answerer") }}
+            {{ filter_form.text(class="ant-input", style="margin: 0px 0px 10px;", rows="1",
+                placeholder="filter by question text") }}
+          <button type="input" class="ant-btn ant-btn-primary" style="margin: 10px;">
+          <span>Filter</span></button>
+        </form>
+      </div>
     {% for item in answers %}
         {% include '_single_answer.html' %}
     {%  endfor %}

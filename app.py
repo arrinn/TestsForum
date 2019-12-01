@@ -4,16 +4,16 @@ from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
 from init import app
-from forms import LoginForm, AnswerForm, RegistrationForm, QuestionsAddingForm
+from forms import LoginForm, AnswerForm, RegistrationForm, QuestionsAddingForm, FilterForm
 
 from database_connector import get_questions_list, write_answer, register_user, get_user, add_question, \
-    get_answers_list, delete_question, get_question
+    get_answers_list, delete_question, get_question, is_answered
 
 
 @app.route('/index')
 def hello_world():
-    user = {'username': current_user.username if current_user.is_authenticated else 'None'}
-    return render_template("index.html", title='Home', user=user)
+    username = current_user.username if current_user.is_authenticated else 'None'
+    return render_template("index.html", title='Home', username=username)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -24,7 +24,6 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         register_user(form.username.data, form.email.data, form.password.data)
-        flash('Congratulations, you are now a registered user!')
         return redirect('/login')
 
     return render_template('register.html', title='Register', form=form)
@@ -58,12 +57,18 @@ def logout():
     return redirect('/index')
 
 
-@app.route('/questions', methods=['GET', 'POST'])
+@app.route('/questions', methods=['GET', 'POST', 'UPDATE'])
 @login_required
 def questions():
-    author = request.args.get('author', None)
-    return render_template('questions.html', questions=get_questions_list(author), form=AnswerForm(),
-                           current_user=current_user.username)
+    filter_form = FilterForm()
+    creator = request.args.get('creator', None)
+    text = None
+    if request.method == 'POST' and filter_form.validate_on_submit():
+        creator = filter_form.creator.data if filter_form.creator.data else None
+        text = filter_form.text.data if filter_form.text.data else None
+
+    return render_template('questions.html', questions=get_questions_list(creator, text), form=AnswerForm(),
+                           current_user=current_user.username, filter_form=filter_form)
 
 
 @app.route('/answer/<question_id>', methods=['POST'])
@@ -71,7 +76,8 @@ def questions():
 def answer_question(question_id):
     answer_form = AnswerForm()
     if answer_form.validate_on_submit():
-        write_answer(current_user.username, question_id, answer_form.answer_text.data)
+        if not is_answered(current_user.username, question_id) or not get_question(question_id).one_attempt:
+            write_answer(current_user.username, question_id, answer_form.answer_text.data)
     return redirect(url_for('questions'))
 
 
@@ -81,10 +87,18 @@ def profile():
     return render_template('profile.html', username=current_user.username)
 
 
-@app.route('/answers', methods=['GET'])
+@app.route('/answers', methods=['GET', 'POST'])
 @login_required
 def answers_list():
-    return render_template('answers.html', answers=get_answers_list(questions_owner=current_user.username))
+    filter_form = FilterForm()
+    if request.method == 'POST' and filter_form.validate_on_submit():
+        answered_by_filter = filter_form.creator.data if filter_form.creator.data else None
+        question_text_filter = filter_form.text.data if filter_form.text.data else None
+        answers = get_answers_list(questions_owner=current_user.username, answered_by=answered_by_filter,
+                                   question_text=question_text_filter)
+    else:
+        answers = get_answers_list(questions_owner=current_user.username)
+    return render_template('answers.html', answers=answers, filter_form=filter_form)
 
 
 @app.route('/add_question', methods=['GET', 'POST'])
@@ -92,7 +106,7 @@ def answers_list():
 def add_question_view():
     form = QuestionsAddingForm()
     if request.method == 'POST' and form.validate_on_submit():
-        add_question(current_user.username, form.question.data, form.answer.data)
+        add_question(current_user.username, form.question.data, form.answer.data, form.is_one_attempt.data)
         return redirect('/questions')
     else:
         return render_template('add_question.html', form=form)

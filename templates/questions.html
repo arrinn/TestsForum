@@ -4,30 +4,19 @@
   <div class="main__items">
     <div class="quiz">
       <div class="quiz__settings">
-        <div class="ant-select ant-select-enabled" style="width: 120px; margin: 10px;">
-          <div class="ant-select-selection
-        ant-select-selection--single" role="combobox" aria-autocomplete="list" aria-haspopup="true"
-            aria-controls="63ecf4d5-4eb4-4336-a58f-0467a2f25eae" aria-expanded="false" tabindex="0">
-            <div class="ant-select-selection__rendered">
-              <div class="ant-select-selection-selected-value" title="Filters" style="display: block; opacity: 1;">
-                Filters</div>
-            </div><span class="ant-select-arrow" unselectable="on" style="user-select: none;"><i
-                aria-label="icon: down" class="anticon anticon-down ant-select-arrow-icon"><svg
-                  viewBox="64 64 896 896" focusable="false" class="" data-icon="down" width="1em" height="1em"
-                  fill="currentColor" aria-hidden="true">
-                  <path
-                    d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z">
-                  </path>
-                </svg></i></span>
-          </div>
-        </div>
-          <form action="/add_question" method="GET">
-            <button type="input" class="ant-btn ant-btn-primary" style="margin: 10px;">
-            <span>Add a new question</span></button>
-          </form>
+        <form action="/questions" method="POST" class="quiz__settings">
+            {{ filter_form.hidden_tag() }}
+
+            {{ filter_form.creator(class="ant-input", style="margin: 0px 0px 10px;", rows="1",
+                placeholder="filter by creator") }}
+            {{ filter_form.text(class="ant-input", style="margin: 0px 0px 10px;", rows="1",
+                placeholder="filter by text") }}
+          <button type="input" class="ant-btn ant-btn-primary" style="margin: 10px;">
+          <span>Filter</span></button>
+        </form>
       </div>
       {% for item in questions %}
-          {% include '_single_question.html' %}
+        {% include '_single_question.html' %}
       {%  endfor %}
    </div>
   </div>
