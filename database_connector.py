@@ -1,6 +1,7 @@
 from init import db
 from models import Questions, Answers, Users
 from datetime import datetime
+import config
 
 
 def get_current_datetime():
@@ -20,7 +21,8 @@ def is_correct_answer(question_id, text):
 
 
 def is_answered(username, question_id):
-    result = Answers.query.filter(Answers.question_id == question_id, Answers.username == username).first()
+    result = Answers.query.filter(Answers.question_id == question_id, Answers.username == username,
+                                  Answers.status == 'Active').first()
     return result is not None
 
 
@@ -97,6 +99,9 @@ def archive_answer(answer_id):
     db.session.commit()
 
 
+# using EMA
 def update_question_score(question_id, user_score):
     question = get_question(question_id)
-    pass
+    score = round(config.EMA_ALPHA * user_score + (1 - config.EMA_ALPHA) * question.score, 2)
+    question.score = score
+    db.session.commit()

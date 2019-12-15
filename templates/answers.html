@@ -19,10 +19,17 @@
           <button type="input" class="ant-btn ant-btn-primary" style="margin: 10px;">
           <span>Filter</span></button>
         </form>
-        <form action="/my_answers" method="GET">
-          <button type="input" class="ant-btn ant-btn-primary" style="margin: 10px;">
-          <span>My answers</span></button>
-        </form>
+        {% if not is_my_answers %}
+          <form action="/my_answers" method="GET">
+            <button type="input" class="ant-btn ant-btn-primary" style="margin: 10px;">
+            <span>My answers</span></button>
+          </form>
+        {% else %}
+          <form action="/answers" method="GET">
+            <button type="input" class="ant-btn ant-btn-primary" style="margin: 10px;">
+            <span>Answers</span></button>
+          </form>
+        {% endif %}
       </div>
     {% for item in answers %}
         {% include '_single_answer.html' %}
