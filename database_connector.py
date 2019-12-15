@@ -7,9 +7,9 @@ def get_current_datetime():
     return datetime.now().strftime('%d-%m-%Y %H:%M')
 
 
-def add_question(username, text, answer, is_one_attempt):
+def add_question(username, text, answer, is_one_attempt, score):
     question = Questions(creator=username, text=text, time=get_current_datetime(), correct_answer=answer,
-                         one_attempt=is_one_attempt)
+                         one_attempt=is_one_attempt, score=score, total_answers=0)
     db.session.add(question)
     db.session.commit()
 
@@ -20,15 +20,18 @@ def is_correct_answer(question_id, text):
 
 
 def is_answered(username, question_id):
-    result = Answers.query.filter(question_id == question_id, username == username).first()
+    result = Answers.query.filter(Answers.question_id == question_id, Answers.username == username).first()
     return result is not None
 
 
-def write_answer(username, question_id, text):
+def write_answer(username, question_id, text, user_score):
     answer = Answers(username=username, question_id=question_id, answer=text, time=get_current_datetime(),
-                     is_correct=is_correct_answer(question_id, text))
+                     is_correct=is_correct_answer(question_id, text), user_scored=user_score)
+    question = get_question(question_id)
+    question.total_answers += 1
     db.session.add(answer)
     db.session.commit()
+    update_question_score(question_id, user_score)
 
 
 def register_user(username, email, password):
@@ -51,7 +54,7 @@ def get_questions_list(author=None, text=None):
     return questions_list.all()
 
 
-def get_answers_list(questions_owner, answered_by=None, question_text=None):
+def get_answers_list(questions_owner, answered_by=None, question_text=None, status=None):
     answers_list = Answers.query.join(Questions, Answers.question_id == Questions.id).add_columns(
         Questions.text, Questions.creator, Questions.correct_answer)
 
@@ -64,6 +67,9 @@ def get_answers_list(questions_owner, answered_by=None, question_text=None):
     if question_text is not None:
         answers_list = answers_list.filter(Questions.text.like('%{}%'.format(question_text)))
 
+    if status is not None:
+        answers_list = answers_list.filter(Answers.status == status)
+
     return answers_list.all()
 
 
@@ -71,6 +77,26 @@ def get_question(question_id):
     return Questions.query.filter(Questions.id == question_id).first()
 
 
+def get_answer(answer_id):
+    return Answers.query.filter(Answers.id == answer_id).first()
+
+
 def delete_question(question_id):
     db.session.delete(get_question(question_id))
     db.session.commit()
+
+
+def delete_answer(answer_id):
+    db.session.delete(get_answer(answer_id))
+    db.session.commit()
+
+
+def archive_answer(answer_id):
+    answer = get_answer(answer_id)
+    answer.status = 'Archived'
+    db.session.commit()
+
+
+def update_question_score(question_id, user_score):
+    question = get_question(question_id)
+    pass

@@ -7,7 +7,7 @@ from init import app
 from forms import LoginForm, AnswerForm, RegistrationForm, QuestionsAddingForm, FilterForm
 
 from database_connector import get_questions_list, write_answer, register_user, get_user, add_question, \
-    get_answers_list, delete_question, get_question, is_answered
+    get_answers_list, delete_question, get_question, is_answered, get_answer, archive_answer
 
 
 @app.route('/index')
@@ -77,7 +77,7 @@ def answer_question(question_id):
     answer_form = AnswerForm()
     if answer_form.validate_on_submit():
         if not is_answered(current_user.username, question_id) or not get_question(question_id).one_attempt:
-            write_answer(current_user.username, question_id, answer_form.answer_text.data)
+            write_answer(current_user.username, question_id, answer_form.answer_text.data, answer_form.user_score.data)
     return redirect(url_for('questions'))
 
 
@@ -95,10 +95,24 @@ def answers_list():
         answered_by_filter = filter_form.creator.data if filter_form.creator.data else None
         question_text_filter = filter_form.text.data if filter_form.text.data else None
         answers = get_answers_list(questions_owner=current_user.username, answered_by=answered_by_filter,
-                                   question_text=question_text_filter)
+                                   question_text=question_text_filter, status='Active')
     else:
-        answers = get_answers_list(questions_owner=current_user.username)
-    return render_template('answers.html', answers=answers, filter_form=filter_form)
+        answers = get_answers_list(questions_owner=current_user.username, status='Active')
+    return render_template('answers.html', answers=answers, filter_form=filter_form, is_my_answers=False)
+
+
+@app.route('/my_answers', methods=['GET', 'POST'])
+@login_required
+def my_answers_view():
+    filter_form = FilterForm()
+    if request.method == 'POST' and filter_form.validate_on_submit():
+        creator_filter = filter_form.creator.data if filter_form.creator.data else None
+        question_text_filter = filter_form.text.data if filter_form.text.data else None
+        answers = get_answers_list(questions_owner=creator_filter, answered_by=current_user.username,
+                                   question_text=question_text_filter, status='Active')
+    else:
+        answers = get_answers_list(questions_owner=None, answered_by=current_user.username, status='Active')
+    return render_template('answers.html', answers=answers, filter_form=filter_form, is_my_answers=True)
 
 
 @app.route('/add_question', methods=['GET', 'POST'])
@@ -106,7 +120,8 @@ def answers_list():
 def add_question_view():
     form = QuestionsAddingForm()
     if request.method == 'POST' and form.validate_on_submit():
-        add_question(current_user.username, form.question.data, form.answer.data, form.is_one_attempt.data)
+        add_question(current_user.username, form.question.data, form.answer.data, form.is_one_attempt.data,
+                     form.initial_score.data)
         return redirect('/questions')
     else:
         return render_template('add_question.html', form=form)
@@ -118,6 +133,14 @@ def delete_question_view(question_id):
     if get_question(question_id).creator == current_user.username:
         delete_question(question_id)
     return redirect('/questions')
+
+
+@app.route('/delete_answer/<answer_id>', methods=['POST'])
+@login_required
+def delete_answer_view(answer_id):
+    if get_answer(answer_id).username == current_user.username:
+        archive_answer(answer_id)
+    return redirect('/my_answers')
 
 
 if __name__ == '__main__':

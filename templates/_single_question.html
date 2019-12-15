@@ -26,6 +26,7 @@
                 <div class="ant-card-head-title">
                     {{ item.text }}
                 </div>
+                  {{ item.score }} points
               </div>
             </div>
               {% from "formhelpers.html" import render_field %}
@@ -34,6 +35,7 @@
               <form action="/answer/{{ item.id }}" method="POST" name="answer">
                   {{ form.hidden_tag() }}
                   {{ render_field(form.answer_text, class="ant-input", style="margin: 0px 0px 10px;", rows="4") }}
+                  {{ render_field(form.user_score, class="ant-input", style="margin: 0px 0px 10px;", rows="1") }}
 
                   <button type="submit" class="ant-btn ant-btn-primary ant-btn-block"><span>Answer</span></button>
                 </form>

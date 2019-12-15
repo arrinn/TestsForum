@@ -31,6 +31,8 @@ class Questions(db.Model):
     correct_answer = db.Column(db.String(120))
     time = db.Column(db.String(32))
     one_attempt = db.Column(db.Boolean)
+    score = db.Column(db.Float)
+    total_answers = db.Column(db.Integer)
 
     def __repr__(self):
         return '<id: {}, text: {}>'.format(self.id, self.text)
@@ -43,6 +45,8 @@ class Answers(db.Model):
     answer = db.Column(db.String(120))
     time = db.Column(db.String(32))
     is_correct = db.Column(db.Boolean)
+    user_scored = db.Column(db.Integer)
+    status = db.Column(db.Enum('Active', 'Archived'), nullable=False, server_default='Active')
 
     def __repr__(self):
         return '<id: {}, question_id: {}, user_id: {}, text: {}>'.format(

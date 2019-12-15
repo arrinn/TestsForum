@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, IntegerField
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, NumberRange
 
 from models import Users
+import config
 
 
 class LoginForm(FlaskForm):
@@ -31,13 +32,17 @@ class RegistrationForm(FlaskForm):
 
 
 class AnswerForm(FlaskForm):
-    answer_text = TextAreaField('AnswerText')
+    answer_text = TextAreaField('AnswerText', validators=[DataRequired()])
+    user_score = IntegerField('User score', validators=[DataRequired(),
+                                                        NumberRange(config.MARK_RANGE_MIN, config.MARK_RANGE_MAX)])
 
 
 class QuestionsAddingForm(FlaskForm):
-    question = TextAreaField('Question')
-    answer = TextAreaField('Answer')
+    question = TextAreaField('Question', validators=[DataRequired()])
+    answer = TextAreaField('Answer', validators=[DataRequired()])
     is_one_attempt = BooleanField('IsOneAttempt')
+    initial_score = IntegerField('Initial score', validators=[DataRequired(), NumberRange(config.MARK_RANGE_MIN,
+                                                                                          config.MARK_RANGE_MAX)])
 
 
 class FilterForm(FlaskForm):

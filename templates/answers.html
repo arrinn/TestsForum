@@ -5,15 +5,23 @@
 <div class="main__items">
   <div class="quiz">
     <div class="quiz__settings">
-        <form action="/answers" method="POST" class="quiz__settings">
+        {% if is_my_answers %}
+          <form action= "/my_answers" method="POST" class="quiz__settings">
+        {% else %}
+          <form action= "/answers" method="POST" class="quiz__settings">
+        {% endif %}
             {{ filter_form.hidden_tag() }}
 
             {{ filter_form.creator(class="ant-input", style="margin: 0px 0px 10px;", rows="1",
-                placeholder="filter by answerer") }}
+                placeholder="filter by {}".format("creator" if is_my_answers else "answerer")) }}
             {{ filter_form.text(class="ant-input", style="margin: 0px 0px 10px;", rows="1",
                 placeholder="filter by question text") }}
           <button type="input" class="ant-btn ant-btn-primary" style="margin: 10px;">
           <span>Filter</span></button>
+        </form>
+        <form action="/my_answers" method="GET">
+          <button type="input" class="ant-btn ant-btn-primary" style="margin: 10px;">
+          <span>My answers</span></button>
         </form>
       </div>
     {% for item in answers %}
