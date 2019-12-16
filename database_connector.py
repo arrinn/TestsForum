@@ -1,7 +1,7 @@
 from init import db
 from models import Questions, Answers, Users
 from datetime import datetime
-import config
+from config import update_rating
 
 
 def get_current_datetime():
@@ -99,9 +99,8 @@ def archive_answer(answer_id):
     db.session.commit()
 
 
-# using EMA
 def update_question_score(question_id, user_score):
     question = get_question(question_id)
-    score = round(config.EMA_ALPHA * user_score + (1 - config.EMA_ALPHA) * question.score, 2)
+    score = update_rating(question.score, user_score)
     question.score = score
     db.session.commit()

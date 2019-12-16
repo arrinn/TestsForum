@@ -1,36 +1,25 @@
 {% extends "base.html" %}
 
 {% block app_content %}
+    {% from "formhelpers.html" import render_field %}
+    {% from "formhelpers.html" import render_field_without_label %}
+
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
-            {{ form.username.label }}<br>
-            {{ form.username(size=32) }}<br>
-            {% for error in form.username.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
+
+            {{ render_field(form.username, class="ant-input", style="margin: 0px 0px 10px;", rows="1", size=32) }}
         </p>
         <p>
-            {{ form.email.label }}<br>
-            {{ form.email(size=64) }}<br>
-            {% for error in form.email.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
+            {{ render_field(form.email, class="ant-input", style="margin: 0px 0px 10px;", rows="1", size=32) }}
         </p>
         <p>
-            {{ form.password.label }}<br>
-            {{ form.password(size=32) }}<br>
-            {% for error in form.password.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
+            {{ render_field(form.password, class="ant-input", style="margin: 0px 0px 10px;", rows="1", size=32) }}
         </p>
         <p>
-            {{ form.password2.label }}<br>
-            {{ form.password2(size=32) }}<br>
-            {% for error in form.password2.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
+            {{ render_field(form.password2, class="ant-input", style="margin: 0px 0px 10px;", rows="1", size=32) }}
         </p>
-        <p>{{ form.submit() }}</p>
+        <p> {{ render_field_without_label(form.submit, class="ant-btn ant-btn-primary",
+                style="margin: 10px;", text="Sign in") }} </p>
     </form>
 {% endblock %}
