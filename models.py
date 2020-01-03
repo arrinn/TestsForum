@@ -9,6 +9,7 @@ class Users(db.Model, UserMixin):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    score = db.Column(db.Float)
     answers = db.relationship('Answers', backref='answered', lazy='dynamic')
     questions = db.relationship('Questions', backref='created', lazy='dynamic')
 
@@ -33,6 +34,7 @@ class Questions(db.Model):
     one_attempt = db.Column(db.Boolean)
     score = db.Column(db.Float)
     total_answers = db.Column(db.Integer)
+    status = db.Column(db.Enum('Active', 'Archived'), nullable=False, server_default='Active')
 
     def __repr__(self):
         return '<id: {}, text: {}>'.format(self.id, self.text)

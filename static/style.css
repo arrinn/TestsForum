@@ -24851,6 +24851,7 @@
     /* stylelint-disable declaration-bang-space-before,no-duplicate-selectors,string-no-newline */
     .ant-table-wrapper {
       zoom: 1;
+      width: 50%;
     }
 
     .ant-table-wrapper::before,

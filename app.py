@@ -7,10 +7,11 @@ from init import app
 from forms import LoginForm, AnswerForm, RegistrationForm, QuestionsAddingForm, FilterForm
 
 from database_connector import get_questions_list, write_answer, register_user, get_user, add_question, \
-    get_answers_list, delete_question, get_question, is_answered, get_answer, archive_answer
+    get_answers_list, archive_question, get_question, is_answered, get_answer, archive_answer, get_users_scores
 
 
 @app.route('/index')
+@app.route('/')
 def hello_world():
     username = current_user.username if current_user.is_authenticated else 'None'
     return render_template("index.html", title='Home', username=username)
@@ -67,8 +68,8 @@ def questions():
         creator = filter_form.creator.data if filter_form.creator.data else None
         text = filter_form.text.data if filter_form.text.data else None
 
-    return render_template('questions.html', questions=get_questions_list(creator, text), form=AnswerForm(),
-                           current_user=current_user.username, filter_form=filter_form)
+    return render_template('questions.html', questions=get_questions_list(creator, text, status='Active'),
+                           form=AnswerForm(), current_user=current_user.username, filter_form=filter_form)
 
 
 @app.route('/answer/<question_id>', methods=['POST'])
@@ -131,7 +132,7 @@ def add_question_view():
 @login_required
 def delete_question_view(question_id):
     if get_question(question_id).creator == current_user.username:
-        delete_question(question_id)
+        archive_question(question_id)
     return redirect('/questions')
 
 
@@ -141,6 +142,11 @@ def delete_answer_view(answer_id):
     if get_answer(answer_id).username == current_user.username:
         archive_answer(answer_id)
     return redirect('/my_answers')
+
+
+@app.route('/board')
+def leaderboards_view():
+    return render_template('leaderboards.html', users=get_users_scores())
 
 
 if __name__ == '__main__':
