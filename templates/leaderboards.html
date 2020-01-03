@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<div class="ant-table-wrapper">
+    <div class="ant-spin-nested-loading">
+        <div class="ant-spin-container">
+            <div class="ant-table ant-table-default ant-table-scroll-position-left">
+                <div class="ant-table-content">
+                    <div class="ant-table-body">
+                        <table class="">
+                            <colgroup>
+                                <col style="width: 30%; min-width: 30%;">
+                                <col style="width: 20%; min-width: 20%;">
+                                <col>
+                            </colgroup>
+                            <thead class="ant-table-thead">
+                                <tr>
+                                    <th
+                                        class="ant-table-column-has-actions ant-table-column-has-filters ant-table-row-cell-break-word">
+                                        <span class="ant-table-header-column">
+                                            <div><span class="ant-table-column-title">Name</span><span
+                                                    class="ant-table-column-sorter"></span></div>
+                                        </span></th>
+                                    <th
+                                        class="ant-table-column-has-actions ant-table-column-has-filters ant-table-row-cell-break-word">
+                                        <span class="ant-table-header-column">
+                                            <div><span class="ant-table-column-title">Score</span><span
+                                                    class="ant-table-column-sorter"></span></div>
+                                        </span></th>
+                                </tr>
+                            </thead>
+                            <tbody class="ant-table-tbody">
+                                {% for item in users %}
+                                    <tr class="ant-table-row ant-table-row-level-0">
+                                    <td class="ant-table-column-has-actions ant-table-column-has-filters ant-table-row-cell-break-word">
+                                        {{ item.username }}</td>
+                                    <td class="ant-table-column-has-actions ant-table-column-has-filters ant-table-row-cell-break-word">
+                                        {{ item.score }}</td>
+                                    </tr>
+                                {%  endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
